@@ -93,6 +93,7 @@ public class RBoard {
 	    	firstplayer = true;
 			RBoard thisboard = new RBoard();
 			int move = thisboard.buildTree(firstplayer);
+			 move = columns/2;
 	//		System.out.println("Entering move: " + move);
     		thisboard.updateBoard(move, firstplayer);
     		firstmove = false;
@@ -286,7 +287,8 @@ public class RBoard {
 	}
 	
 	public int buildTree(boolean player){
-		
+
+		int color;
 		int tempBoard[][] = new int[rows][columns];
 		for(int r = 0; r < rows; r++)
 		{
@@ -297,18 +299,398 @@ public class RBoard {
 			}
 		}
 		boolean terminalWarning = false;
+		boolean winState = false;
 
 		RBoard thisb = new RBoard();
-		Random rand = new Random();
 		int[] selectionArray = new int[columns];
 		int d = 1;
 		
 		int placement = 0;
 		boolean placed = false;
+		/*
+		//first check for automatic win scenarios
 		
-		//first check for automatic win scenarios or blocking opponent winning scenario
+		if(player == true)
+			color = 1; //black
+		else 
+			color = 2; // red
 		
-		if(terminalWarning == false){
+		for(int c = 0; c < columns; c++)
+		{
+			for(int r = 0; r < rows; r++)
+			{
+				if(tempBoard[r][c] == 0){
+				int numHoriz= 1;
+				int enemyHoriz = 0;
+				int numVert = 1;
+				int enemyVert = 0;
+				int numDiagBlUr = 1;
+				int enemyDiagBlUr = 0;
+				int numDiagUlBr = 1;
+				int enemyDiagUlBr = 0;
+					
+					//check horizontal
+					for(int i = c-1; i >= 0; i--){
+						if(tempBoard[r][i] == color){
+							numHoriz++;
+							if(numHoriz == r){
+							winState = true;
+							placement = i;
+							}
+						}
+						else if(tempBoard[r][i] != color && tempBoard[r][i] != 0)
+						{
+							enemyHoriz++;
+							if(enemyHoriz == r-1)
+							{
+								terminalWarning = true;
+								placement = i;
+							}
+						}
+						else
+							break;
+					}
+					for(int i = c+1; i < columns; i++){
+						if(tempBoard[r][i] == color){
+							numHoriz++;
+							if(numHoriz == r){
+								winState = true;
+								placement = i;
+							}
+						}
+						else if(tempBoard[r][i] != color && tempBoard[r][i] != 0)
+						{
+							enemyHoriz++;
+							if(enemyHoriz == r-1)
+							{
+								terminalWarning = true;
+								placement = i;
+							}
+						}
+						else
+							break;
+					}
+
+					//check vertical
+					for(int i = r-1; i >= 0; i--){
+						if(tempBoard[i][c] == color){
+							numVert++;
+							if(numVert == r){
+								winState = true;
+								placement = c;
+							}
+						}
+						else if(tempBoard[r][i] != color && tempBoard[r][i] != 0)
+						{
+							enemyVert++;
+							if(enemyVert == r-1)
+							{
+								terminalWarning = true;
+								placement = i;
+							}
+						}
+						else
+							break;
+					}
+					for(int i = r+1; i < rows; i++){
+						if(tempBoard[i][c] == color){
+							numVert++;
+							if(numVert == r){
+								winState = true;
+								placement = c;
+							}
+						}
+						else if(tempBoard[r][i] != color && tempBoard[r][i] != 0)
+						{
+							enemyVert++;
+							if(enemyVert == r-1)
+							{
+								terminalWarning = true;
+								placement = i;
+							}
+						}
+						else
+							break;
+					}
+					
+					//check diagonal bl -> ur
+							int diagRow = r;
+							int diagCol = c;
+							
+							while(diagRow >= 0 && diagCol >= 0){
+								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+									break;
+								else{
+									diagRow--;
+									diagCol--;
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagBlUr++;
+										if(numDiagBlUr == r){
+											winState = true;
+											placement = diagCol;
+										}
+									}
+									else if(tempBoard[diagRow][diagCol] != color && tempBoard[diagRow][diagCol] != 0)
+									{
+										enemyDiagBlUr++;
+										if(enemyDiagBlUr == r-1)
+										{
+											terminalWarning = true;
+											placement = diagCol;
+										}
+									}
+									else
+										break;
+								}
+							}
+							diagRow = r;
+							diagCol = c;
+							while(diagRow < rows && diagCol < columns){
+								diagRow++;
+								diagCol++;
+								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+									break;
+								else{
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagBlUr++;
+										if(numDiagBlUr == r){
+											winState = true;
+											placement = diagCol;
+										}
+									}
+									else if(tempBoard[diagRow][diagCol] != color && tempBoard[diagRow][diagCol] != 0)
+									{
+										enemyDiagBlUr++;
+										if(enemyDiagBlUr == r-1)
+										{
+											terminalWarning = true;
+											placement = diagCol;
+										}
+									}
+									else
+										break;
+								}
+							}
+							//check diagonal ul -> br
+							diagRow = r;
+							diagCol = c;
+							
+							while(diagRow < rows && diagCol >= 0){
+								diagRow++;
+								diagCol--;
+								if(diagCol < 0 || diagRow >= rows)
+									break;
+								else{
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagUlBr++;
+										if(numDiagUlBr == r){
+											winState = true;
+											placement = diagCol;
+										}
+									}
+									else if(tempBoard[diagRow][diagCol] != color && tempBoard[diagRow][diagCol] != 0)
+									{
+										enemyDiagUlBr++;
+										if(enemyDiagUlBr == r-1)
+										{
+											terminalWarning = true;
+											placement = diagCol;
+										}
+									}
+									else
+										break;
+								}
+							}
+							diagRow = r;
+							diagCol = c;
+							
+							while(diagRow >= 0 && diagCol < columns){
+								diagRow--;
+								diagCol++;
+								if(diagRow < 0 || diagCol >= columns)
+									break;
+								else{
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagUlBr++;
+										if(numDiagUlBr == r){
+											winState = true;
+											return diagCol;
+										}
+									}
+									else if(tempBoard[diagRow][diagCol] != color && tempBoard[diagRow][diagCol] != 0)
+									{
+										enemyDiagUlBr++;
+										if(enemyDiagUlBr == r-1)
+										{
+											terminalWarning = true;
+											placement = diagCol;
+										}
+									}
+									else
+										break;
+								}
+								
+							}
+					
+	    		}
+			}
+		}
+	
+		//first check for blocking opponent win scenarios
+		
+		if(player == true)
+			color = 2; //red
+		else 
+			color = 1; // b
+		for(int c = 0; c < columns; c++)
+		{
+			for(int r = 0; r < rows; r++)
+			{
+				if(tempBoard[r][c] == 0){
+					int numHoriz= 1;
+					int numVert = 1;
+					int numDiagBlUr = 1;
+					int numDiagUlBr = 1;
+					
+					//check horizontal
+					for(int i = c-1; i >= 0; i--){
+						if(tempBoard[r][i] == color){
+							numHoriz++;
+							if(numHoriz == r){
+								terminalWarning = true;
+								placement =  i;
+							}
+						}
+						else
+							break;
+					}
+					for(int i = c+1; i < columns; i++){
+						if(tempBoard[r][i] == color){
+							numHoriz++;
+							if(numHoriz == r){
+								terminalWarning = true;
+								placement =  i;
+							}
+						}
+						else
+							break;
+					}
+
+					//check vertical
+					for(int i = r-1; i >= 0; i--){
+						if(tempBoard[i][c] == color){
+							numVert++;
+							if(numVert == r){
+								terminalWarning = true;
+								placement =  c;
+							}
+						}
+						else
+							break;
+					}
+					for(int i = r+1; i < rows; i++){
+						if(tempBoard[i][c] == color){
+							numVert++;
+							if(numVert == r){
+								terminalWarning = true;
+								placement =  c;
+							}
+						}
+						else
+							break;
+					}
+					
+					//check diagonal bl -> ur
+							int diagRow = r;
+							int diagCol = c;
+							
+							while(diagRow >= 0 && diagCol >= 0){
+								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+									break;
+								else{
+									diagRow--;
+									diagCol--;
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagBlUr++;
+										if(numDiagBlUr == r){
+											terminalWarning = true;
+											placement =  diagCol;
+										}
+									}
+									else
+										break;
+								}
+							}
+							diagRow = r;
+							diagCol = c;
+							while(diagRow < rows && diagCol < columns){
+								diagRow++;
+								diagCol++;
+								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+									break;
+								else{
+									
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagBlUr++;
+										if(numDiagBlUr == r){
+											terminalWarning = true;
+											placement =  diagCol;
+										}
+									}
+									else
+										break;
+								}
+							}
+							//check diagonal ul -> br
+							diagRow = r;
+							diagCol = c;
+							
+							while(diagRow < rows && diagCol >= 0){
+								diagRow++;
+								diagCol--;
+								if(diagCol < 0 || diagRow >= rows)
+									break;
+								else{
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagUlBr++;
+										if(numDiagUlBr == r){
+											terminalWarning = true;
+											placement =  diagCol;
+										}
+									}
+									else
+										break;
+								}
+							}
+							diagRow = r;
+							diagCol = c;
+							
+							while(diagRow >= 0 && diagCol < columns){
+								diagRow--;
+								diagCol++;
+								if(diagRow < 0 || diagCol >= columns)
+									break;
+								else{
+									if(tempBoard[diagRow][diagCol] == color){
+										numDiagUlBr++;
+										if(numDiagUlBr == r){
+											terminalWarning = true;
+											placement = diagCol;
+										}
+									}
+									else
+										break;
+								}
+								
+							}
+					
+	    		}
+			}
+		}
+*/
+		
+		//now begin to build the tree
+		if(terminalWarning == false && winState == false){
 			for(int i=0; i<columns; i++)
 			{
 				for(int ro = 0; ro < rows; ro++){
@@ -317,16 +699,12 @@ public class RBoard {
 		    				tempBoard[ro][i] = 1;
 		    				player = false;
 		    				selectionArray[i] = thisb.buildNode(tempBoard, d, i, player);
-
-//		    				System.out.println("Depth " + d + " " +selectionArray[i]);
 		    				placed = true;
 		    			}
 		    			else if(player == false){
 		    				tempBoard[ro][i] = 2;
 		    				player = true;
 		    				selectionArray[i] = thisb.buildNode(tempBoard, d, i, player);
-
-//		    				System.out.println("Depth " + d + " " +selectionArray[i]);
 		    				placed = true;
 		    			}
 		    			else
@@ -335,27 +713,19 @@ public class RBoard {
 		    	}
 				placed = false;
 			}
-
-//			System.out.println("Calculating max for depth: " + d);
 			int max = 0;
-
-//			System.out.println("Final array: ");
 			for(int i=0; i<columns; i++){
-//				System.out.println(selectionArray[i]);
 				if(selectionArray[i] > max){
 					max = selectionArray[i];
 					placement = i;
-//					System.out.println("New max: " + max + " at " + i);
 				}
 			}
 		}
-//		System.out.println("Final choice: " + placement);
 		return placement;
 	}
 	
 	public int buildNode(int[][] b, int d, int col, boolean player)
 	{
-		//System.out.println("passed depth = " + d);
 		RBoard thisb = new RBoard();
 		int selection = 0;
 
@@ -386,69 +756,321 @@ public class RBoard {
 		if(d < depth-1)
 		{
 			d++;
-		//	System.out.println("Calculated depth for < d-1 " + d);
 			
 			for(int i=0; i<columns; i++)
 			{
-			//	System.out.println("Printing heuristics for depth: " + d);
 				selectionArray[i] = thisb.buildNode(tBoard, d, i, player);
-			//	System.out.println(selectionArray[i]);
 			}
 			if(d%2 == 0) // min
 			{
 				int min = 1000000;
-
-			//	System.out.println("Calculating min for depth: " + d);
 				for(int i=0; i<columns; i++){
 					if(selectionArray[i] < min){
 						min = selectionArray[i];
 						selection = min;
-				//		System.out.println("New min: " + selection);
 					}
 				}
 			}
 			else // max
 			{
 				int max = 0;
-
-		//		System.out.println("Calculating max for depth: " + d);
 				for(int i=0; i<columns; i++){
 					if(selectionArray[i] > max){
 						max = selectionArray[i];
 						selection = max;
-			//			System.out.println("New max: " + selection);
 					}
 				}
 			}
 		}
 		else if(d == depth-1){
 			d++;
-		//	System.out.println("Calculated depth for == d-1 " + d);
-		//	System.out.println("Printing heuristics for depth: " + d);
 			for(int i=0; i<columns; i++){
 				selectionArray[i] = thisb.getHeuristic(tBoard, i, player);
-		//		System.out.println(selectionArray[i]);
 				
 			}
 			int min = 100000;
-		//	System.out.println("Calculating min for depth: " + d);
 			for(int i=0; i<columns; i++){
 				if(selectionArray[i] < min){
 					min = selectionArray[i];
 					selection = min;
-		//			System.out.println("New min: " + selection);
 				}
 			}
-	//		System.out.println("");
 		}
-	//	System.out.println("Final selection: " + selection + "\n");
 		return selection;
 	}
 	
 	public int getHeuristic(int[][] b, int col, boolean player)
 	{
+		int color;
+		int row = 3;
+		int score = 0;
+		boolean openRow = false;
+		int numHoriz= 1;
+		int enemyHoriz = 0;
+		int numVert = 1;
+		int enemyVert = 0;
+		int numDiagBlUr = 1;
+		int enemyDiagBlUr = 0;
+		int numDiagUlBr = 1;
+		int enemyDiagUlBr = 0;
+		
+		if(player == true)
+			color = 1; //black
+		else 
+			color = 2; // red
+		
+		for(int ro = 0; ro < rows; ro++){
+    		if(b[ro][col] == 0){
+    			row = ro;
+    			openRow = true;
+    			break;
+    		}
+    	}
+		
+		if(openRow == false){
+			score = 999999999;
+			return 999999999;
+		}
+		
+		//check horizontal
+		for(int i = col-1; i >= 0; i--){
+			if(b[row][i] == color){
+				numHoriz++;
+				score += 5;
+				if(numHoriz == r){
+					score += 1000;
+				}
+			}
+			else if(b[row][i] == 0){
+				score += 3;
+				break;
+			}
+			else if(b[row][i] != 0 && b[row][i] != color){
+				enemyHoriz++;
+				score -=3;
+				if(enemyHoriz == r-1)
+				{
+					score += 1000;
+				}
+				break;
+			}
+			else
+				break;
+		}
+		for(int i = col+1; i < columns; i++){
+			if(b[row][i] == color){
+				numHoriz++;
+				score += 5;
+				if(numHoriz == r){
+					score += 1000;
+				}
+			}
+			else if(b[row][i] == 0){
+				score += 3;
+				break;
+			}
+			else if(b[row][i] != 0 && b[row][i] != color){
+				enemyHoriz++;
+				score -=3;
+				if(enemyHoriz == r-1)
+				{
+					score += 1000;
+				}
+				break;
+			}
+			else
+				break;
+		}
+
+		//check vertical
+		for(int i = row-1; i >= 0; i--){
+			if(b[i][col] == color){
+				numVert++;
+				score += 5;
+				if(numVert == r){
+					score += 1000;
+				}
+			}
+			else if(b[i][col] == 0){
+				score += 3;
+				break;
+			}
+			else if(b[i][col] != 0 && b[i][col] != color){
+				enemyVert++;
+				score -=3;
+				if(enemyVert == r-1)
+				{
+					score += 1000;
+				}
+				break;
+			}
+			else
+				break;
+		}
+		for(int i = row+1; i < rows; i++){
+			if(b[i][col] == color){
+				numVert++;
+				score += 5;
+				if(numVert == r){
+					score += 1000;
+				}
+			}
+			else if(b[i][col] == 0){
+				score += 3;
+				break;
+			}
+			else if(b[i][col] != 0 && b[i][col] != color){
+				enemyVert++;
+				score -=3;
+				if(enemyVert == r-1)
+				{
+					score += 1000;
+				}
+				break;
+			}
+			else
+				break;
+		}
+		
+		//check diagonal bl -> ur
+				int diagRow = row;
+				int diagCol = col;
+				
+				while(diagRow >= 0 && diagCol >= 0){
+					if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+						break;
+					else{
+						diagRow--;
+						diagCol--;
+						if(b[diagRow][diagCol] == color){
+							numDiagBlUr++;
+							score += 10;
+							if(numDiagBlUr == r){
+								score += 2000;
+							}
+						}
+						else if(b[diagRow][diagCol] == 0){
+							score += 6;
+							break;
+						}
+						else if(b[diagRow][diagCol] != 0 && b[diagRow][diagCol] != color){
+							enemyDiagBlUr++;
+							score -=6;
+							if(enemyDiagBlUr == r-1)
+							{
+								score += 1000;
+							}
+							break;
+						}
+						else
+							break;
+					}
+				}
+				diagRow = row;
+				diagCol = col;
+				while(diagRow < rows && diagCol < columns){
+					diagRow++;
+					diagCol++;
+					if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+						break;
+					else{
+						
+						if(b[diagRow][diagCol] == color){
+							numDiagBlUr++;
+							score += 10;
+							if(numDiagBlUr == r){
+								score += 2000;
+							}
+						}
+						else if(b[diagRow][diagCol] == 0){
+							score += 6;
+							break;
+						}
+						else if(b[diagRow][diagCol] != 0 && b[diagRow][diagCol] != color){
+							enemyDiagBlUr++;
+							score -=6;
+							if(enemyDiagBlUr == r-1)
+							{
+								score += 1000;
+							}
+							break;
+						}
+						else
+							break;
+					}
+				}
+				//check diagonal ul -> br
+				diagRow = row;
+				diagCol = col;
+				
+				while(diagRow < rows && diagCol >= 0){
+
+					diagRow++;
+					diagCol--;
+					if(diagCol < 0 || diagRow >= rows)
+						break;
+					else{
+						if(b[diagRow][diagCol] == color){
+							numDiagUlBr++;
+							score += 10;
+							if(numDiagUlBr == r){
+								score += 2000;
+							}
+						}
+						else if(b[diagRow][diagCol] == 0){
+							score += 6;
+							break;
+						}
+						else if(b[diagRow][diagCol] != 0 && b[diagRow][diagCol] != color){
+							enemyDiagUlBr++;
+							score -=6;
+							if(enemyDiagUlBr == r-1)
+							{
+								score += 1000;
+							}
+							break;
+						}
+						else
+							break;
+					}
+				}
+				diagRow = row;
+				diagCol = col;
+				
+				while(diagRow >= 0 && diagCol < columns){
+					diagRow--;
+					diagCol++;
+					if(diagRow < 0 || diagCol >= columns)
+						break;
+					else{
+						if(b[diagRow][diagCol] == color){
+							numDiagUlBr++;
+							score += 10;
+							if(numDiagUlBr == r){
+								score += 2000;
+							}
+						}
+						else if(b[diagRow][diagCol] == 0){
+							score += 6;
+							break;
+						}
+						else if(b[diagRow][diagCol] != 0 && b[diagRow][diagCol] != color){
+							enemyDiagUlBr++;
+							score -=6;
+							if(enemyDiagUlBr == r-1)
+							{
+								score += 1000;
+							}
+							break;
+						}
+						else
+							break;
+					}
+					
+				}
+		
 		int  n = rand.nextInt(500) + 1;
-		//System.out.println(n);
-		return n;
+	//	System.out.println(score);
+		return score;
 	}
 }
