@@ -235,7 +235,7 @@ public class RBoard {
 		while(diagRow < rows && diagCol < columns){
 			diagRow++;
 			diagCol++;
-			if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+			if(diagRow >= rows || diagCol >= columns)
 				break;
 			else{
 				if(board[diagRow][diagCol] == color){
@@ -312,7 +312,7 @@ public class RBoard {
 		int placement = 0;
 		boolean placed = false;
 		
-		//first check for automatic win/block scenarios
+		//first check for automatic win scenarios
 		if(player == true){
 			color = 1; //black
 			opColor = 2;
@@ -326,7 +326,7 @@ public class RBoard {
 			for(int ro = 0; ro < rows; ro++){
 			  if(tempBoard[ro][c] == 0 && rowcheck == false){
 				  rowcheck = true;
-				//  System.out.println("Checking at... " + ro + "," + c);
+				  System.out.println("Checking at... " + ro + "," + c);
 				int numHoriz= 1;
 				int enemyHoriz = 0;
 				int numVert = 1;
@@ -369,13 +369,14 @@ public class RBoard {
 								return placement;
 							}
 						}
-						if(tempBoard[ro][i] == opColor && opPiece == true){
+						else if(tempBoard[ro][i] == opColor && opPiece == true){
 							playerPiece = false;
 							enemyHoriz++;
 						}
 						else
 							break;
 					}
+					System.out.println("numH at " + ro + "," + c + " " + numHoriz);
 					playerPiece = true;
 					opPiece = true;
 					//check vertical
@@ -390,7 +391,7 @@ public class RBoard {
 								return placement;
 							}
 						}
-						if(tempBoard[i][c] == opColor && opPiece == true){
+						else if(tempBoard[i][c] == opColor && opPiece == true){
 							playerPiece = false;
 							enemyVert++;
 						}
@@ -410,129 +411,131 @@ public class RBoard {
 								return placement;
 							}
 						}
-						if(tempBoard[i][c]== opColor && opPiece == true){
+						else if(tempBoard[i][c]== opColor && opPiece == true){
 							playerPiece = false;
 							enemyVert++;
 						}
 						else
 							break;
 					}
+					System.out.println("numV at " + ro + "," + c + " " + numVert);
 					playerPiece = true;
 					opPiece = true;
 					//check diagonal bl -> ur
-							int diagRow = ro;
-							int diagCol = c;
-							
-							while(diagRow >= 0 && diagCol >= 0){
-								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
-									break;
-								else{
-									diagRow--;
-									diagCol--;
-									if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
-										opPiece = false;
-										numDiagBlUr++;
-										if(numDiagBlUr == r){
-											winState = true;
-											placement = c;
-											System.out.println("BlUr Win Placement: " + placement);
-											return placement;
-										}
+						int diagRow = ro;
+						int diagCol = c;
+						while(diagRow >= 0 && diagCol >= 0){
+							if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+								break;
+							else{
+								diagRow--;
+								diagCol--;
+								if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
+									opPiece = false;
+									numDiagBlUr++;
+									if(numDiagBlUr == r){
+										winState = true;
+										placement = c;
+										System.out.println("BlUr Win Placement: " + placement);
+										return placement;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
-										playerPiece = false;
-										enemyDiagBlUr++;
-									}
-									else
-										break;
 								}
+								else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									playerPiece = false;
+									enemyDiagBlUr++;
+								}
+								else
+									break;
 							}
-							playerPiece = true;
-							opPiece = false;
-							diagRow = ro;
-							diagCol = c;
-							while(diagRow < rows && diagCol < columns){
+						}
+						playerPiece = true;
+						opPiece = true;
+						diagRow = ro;
+						diagCol = c;
+						while(diagRow < rows && diagCol < columns){
+							if(diagRow == rows-1 || diagCol == columns-1)
+								break;
+							else{
 								diagRow++;
 								diagCol++;
-								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
-									break;
-								else{
-									if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
-										opPiece = false;
-										numDiagBlUr++;
-										if(numDiagBlUr == r){
-											winState = true;
-											placement = c;
-											System.out.println("BlUr Win Placement: " + placement);
-											return placement;
-										}
+								if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
+									opPiece = false;
+									numDiagBlUr++;
+									if(numDiagBlUr == r){
+										winState = true;
+										placement = c;
+										System.out.println("BlUr Win Placement: " + placement);
+										return placement;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
-										playerPiece = false;
-										enemyDiagBlUr++;
-									}
-									else
-										break;
 								}
+								else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									playerPiece = false;
+									enemyDiagBlUr++;
+								}
+								else
+									break;
 							}
-							//check diagonal ul -> br
-							diagRow = ro;
-							diagCol = c;
-							playerPiece = true;
-							opPiece = true;
-							while(diagRow < rows && diagCol >= 0){
+						}
+						System.out.println("numBlUr at " + ro + "," + c + " " + numDiagBlUr);
+						//check diagonal ul -> br
+						diagRow = ro;
+						diagCol = c;
+						playerPiece = true;
+						opPiece = true;
+						while(diagRow < rows && diagCol >= 0){
+							if(diagCol == 0 || diagRow == rows-1)
+								break;
+							else{
 								diagRow++;
 								diagCol--;
-								if(diagCol < 0 || diagRow >= rows)
-									break;
-								else{
-									if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
-										opPiece = false;
-										numDiagUlBr++;
-										if(numDiagUlBr == r){
-											winState = true;
-											placement = c;
-											System.out.println("UlBr Win Placement: " + placement);
-											return placement;
-										}
+								if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
+									opPiece = false;
+									numDiagUlBr++;
+									if(numDiagUlBr == r){
+										winState = true;
+										placement = c;
+										System.out.println("UlBr Win Placement: " + placement);
+										return placement;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
-										playerPiece = false;
-										enemyDiagUlBr++;
-									}
-									else
-										break;
 								}
+								else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									playerPiece = false;
+									enemyDiagUlBr++;
+								}
+								else
+									break;
 							}
-							diagRow = ro;
-							diagCol = c;
-							playerPiece = true;
-							opPiece = true;
-							while(diagRow >= 0 && diagCol < columns){
+						}
+						diagRow = ro;
+						diagCol = c;
+						playerPiece = true;
+						opPiece = true;
+						while(diagRow >= 0 && diagCol < columns){
+							if(diagRow == 0 || diagCol == columns-1)
+								break;
+							else{
 								diagRow--;
 								diagCol++;
-								if(diagRow < 0 || diagCol >= columns)
-									break;
-								else{
-									if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
-										opPiece = false;
-										numDiagUlBr++;
-										if(numDiagUlBr == r){
-											winState = true;
-											placement = c;
-											System.out.println("UlBr Win Placement: " + placement);
-											return placement;
-										}
+								if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
+									opPiece = false;
+									numDiagUlBr++;
+									if(numDiagUlBr == r){
+										winState = true;
+										placement = c;
+										System.out.println("UlBr Win Placement: " + placement);
+										return placement;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
-										playerPiece = false;
-										enemyDiagUlBr++;
-									}
-									else
-										break;
 								}
-								
+								else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									playerPiece = false;
+									enemyDiagUlBr++;
+								}
+								else
+									break;
 							}
+							
+						}
+						System.out.println("numUlBr at " + ro + "," + c + " " + numDiagUlBr);
 	    		}
 			}
 			rowcheck = false;
@@ -580,7 +583,7 @@ public class RBoard {
 							opPiece = false;
 							numHoriz++;
 						}
-						if(tempBoard[ro][i] == opColor && opPiece == true){
+						else if(tempBoard[ro][i] == opColor && opPiece == true){
 							playerPiece = false;
 							enemyHoriz++;
 							if(enemyHoriz == r-1){
@@ -601,7 +604,7 @@ public class RBoard {
 							opPiece = false;
 							numVert++;
 						}
-						if(tempBoard[i][c] == opColor && opPiece == true){
+						else if(tempBoard[i][c] == opColor && opPiece == true){
 							playerPiece = false;
 							enemyVert++;
 							if(enemyVert == r-1)
@@ -622,7 +625,7 @@ public class RBoard {
 							opPiece = false;
 							numVert++;
 						}
-						if(tempBoard[i][c]== opColor && opPiece == true){
+						else if(tempBoard[i][c]== opColor && opPiece == true){
 							playerPiece = false;
 							enemyVert++;
 							if(enemyVert == r-1){
@@ -650,7 +653,7 @@ public class RBoard {
 										opPiece = false;
 										numDiagBlUr++;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
 										playerPiece = false;
 										enemyDiagBlUr++;
 										if(enemyDiagBlUr == r-1){
@@ -665,20 +668,20 @@ public class RBoard {
 								}
 							}
 							playerPiece = true;
-							opPiece = false;
+							opPiece = true;
 							diagRow = ro;
 							diagCol = c;
 							while(diagRow < rows && diagCol < columns){
 								diagRow++;
 								diagCol++;
-								if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+								if(diagRow >= rows || diagCol >= columns)
 									break;
 								else{
 									if(tempBoard[diagRow][diagCol] == color && playerPiece == true){
 										opPiece = false;
 										numDiagBlUr++;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
 										playerPiece = false;
 										enemyDiagBlUr++;
 										if(enemyDiagBlUr == r-1){
@@ -707,7 +710,7 @@ public class RBoard {
 										opPiece = false;
 										numDiagUlBr++;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
 										playerPiece = false;
 										enemyDiagUlBr++;
 										if(enemyDiagUlBr == r-1){
@@ -735,7 +738,7 @@ public class RBoard {
 										opPiece = false;
 										numDiagUlBr++;
 									}
-									if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
+									else if(tempBoard[diagRow][diagCol] == opColor && opPiece == true){
 										playerPiece = false;
 										enemyDiagUlBr++;
 										if(enemyDiagUlBr == r-1){
@@ -1011,7 +1014,7 @@ public class RBoard {
 				while(diagRow < rows && diagCol < columns){
 					diagRow++;
 					diagCol++;
-					if(diagRow == 0 || diagCol == 0 || diagRow >= rows || diagCol >= columns)
+					if(diagRow >= rows || diagCol >= columns)
 						break;
 					else{
 						if(b[diagRow][diagCol] == color){
